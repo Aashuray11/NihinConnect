@@ -6,7 +6,6 @@ module.exports = async (req, res) => {
     const url = `${targetBase}/${slug}`.replace(/([^:]\/)\/+/g, '$1')
 
     // Lightweight logging for debugging deployed proxy behavior.
-    // We log method, original path, target URL, a small set of headers, and body length.
     try {
       const sampleHeaders = {
         host: req.headers.host,
