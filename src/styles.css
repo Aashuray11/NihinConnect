@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root { height: 100%; }
+/* Smooth scrolling for the whole page */
+html { scroll-behavior: smooth; }
+/* Prevent mobile browsers from unexpectedly resizing text */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body { @apply bg-gray-100 text-gray-900; }
+/* Modern cross-browser scrollbar for body and overflow containers */
+body, .nih-scroll {
+	/* Firefox */
+	scrollbar-width: thin;
+	scrollbar-color: rgba(100,100,100,0.35) transparent;
+	-webkit-overflow-scrolling: touch; /* momentum scrolling on iOS */
+}
+body::-webkit-scrollbar, .nih-scroll::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+body::-webkit-scrollbar-track, .nih-scroll::-webkit-scrollbar-track {
+	background: transparent;
+}
+body::-webkit-scrollbar-thumb, .nih-scroll::-webkit-scrollbar-thumb {
+	background-color: rgba(100,100,100,0.35);
+	border-radius: 9999px;
+	border: 2px solid transparent;
+}
+body:hover::-webkit-scrollbar-thumb, .nih-scroll:hover::-webkit-scrollbar-thumb {
+	background-color: rgba(100,100,100,0.6);
+}
+
+/* Optional: slightly larger thumb on focused/active state */
+body:active::-webkit-scrollbar-thumb, body:focus::-webkit-scrollbar-thumb,
+.nih-scroll:active::-webkit-scrollbar-thumb, .nih-scroll:focus::-webkit-scrollbar-thumb {
+	background-color: rgba(100,100,100,0.75);
+}
