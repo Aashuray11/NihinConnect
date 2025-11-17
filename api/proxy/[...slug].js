@@ -5,9 +5,34 @@ module.exports = async (req, res) => {
     const targetBase = (process.env.VITE_API_URL || 'https://ahmad-prosurgical-stuart.ngrok-free.dev').replace(/\/+$|\s+/g, '')
     const url = `${targetBase}/${slug}`.replace(/([^:]\/)\/+/g, '$1')
 
+    // Lightweight logging for debugging deployed proxy behavior.
+    // We log method, original path, target URL, a small set of headers, and body length.
+    try {
+      const sampleHeaders = {
+        host: req.headers.host,
+        origin: req.headers.origin,
+        referer: req.headers.referer,
+        'user-agent': req.headers['user-agent'],
+      }
+      console.log(JSON.stringify({ note: 'proxy-incoming', method: req.method, path: req.url, target: url, headers: sampleHeaders }))
+    } catch (e) {
+      console.error('proxy logging failed', e && e.stack ? e.stack : e)
+    }
+
     // Build headers to forward; remove host and add ngrok skip header
     const headers = { ...req.headers, 'ngrok-skip-browser-warning': '1' }
     delete headers.host
+
+    // Handle CORS preflight locally so we don't forward OPTIONS to the backend
+    if (req.method === 'OPTIONS') {
+      // Allow typical headers/methods used by the frontend
+      const reqHeaders = req.headers['access-control-request-headers'] || '*'
+      res.setHeader('Access-Control-Allow-Origin', '*')
+      res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,POST,PUT,DELETE,OPTIONS')
+      res.setHeader('Access-Control-Allow-Headers', reqHeaders)
+      // Let the browser know preflight is allowed
+      return res.status(204).end()
+    }
 
     // Read raw body (works for multipart/form-data file uploads)
     const getRawBody = () =>
