@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login (Dev)</title>
+  <style>
+    body{font-family:Segoe UI,Roboto,Helvetica,Arial;margin:40px}
+    .box{max-width:420px;margin:0 auto}
+    input{width:100%;padding:8px;margin:6px 0}
+    button{padding:8px 12px}
+    pre{background:#f4f4f4;padding:10px}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Login (Dev)</h1>
+    <p>This is a lightweight login page for development only. It posts JSON to <code>/auth/login/</code>.</p>
+    <label>Email</label>
+    <input id="email" placeholder="you@example.com" />
+    <label>Password</label>
+    <input id="password" type="password" placeholder="password" />
+    <div style="margin:10px 0">
+      <button id="btn">Login</button>
+    </div>
+    <div id="out"></div>
+    <hr />
+    <small>If you don't have an account, register via <code>/auth/register/</code>.</small>
+  </div>
+
+  <script>
+    async function postJson(url, body){
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const text = await res.text();
+      let parsed = text;
+      try{ parsed = JSON.parse(text); }catch(e){}
+      return { status: res.status, body: parsed };
+    }
+
+    document.getElementById('btn').addEventListener('click', async ()=>{
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      if(!email){ alert('enter email'); return }
+      const out = document.getElementById('out');
+      out.innerHTML = 'Sending...';
+      try{
+        const r = await postJson('/auth/login/', { email, password });
+        if(r.status >= 200 && r.status < 300){
+          out.innerHTML = '<pre>' + JSON.stringify(r.body, null, 2) + '</pre>';
+        } else {
+          out.innerHTML = '<pre>' + JSON.stringify(r.body, null, 2) + '</pre>';
+        }
+      }catch(err){
+        out.innerHTML = '<pre>' + String(err) + '</pre>';
+      }
+    });
+  </script>
+</body>
+</html>
